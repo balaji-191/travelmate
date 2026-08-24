@@ -1,286 +1,450 @@
-<!DOCTYPE html>
-<html lang="en">
+// =========================================
+// TravelMate AI - Chat JavaScript
+// =========================================
 
-<head>
-    <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+// =========================================
+// DOM ELEMENTS
+// =========================================
 
-    <title>TravelMate AI</title>
+const chatForm = document.getElementById("chat-form");
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
-</head>
+const messageInput = document.getElementById("message-input");
 
-<body>
+const chatWindow = document.getElementById("chat-window");
 
-    <!-- =========================================
-         MAIN CHAT CONTAINER
-    ========================================== -->
+const sendButton = document.getElementById("send-button");
 
-    <div class="chat-container">
+const typingIndicator =
+    document.getElementById("typing-indicator");
 
-        <!-- =====================================
-             HEADER
-        ====================================== -->
+const errorBanner =
+    document.getElementById("error-banner");
 
-        <header class="chat-header">
+const quickPrompts =
+    document.querySelectorAll(".quick-prompt");
 
-            <div class="brand">
 
-                <div class="brand-icon">
-                    ✈️
-                </div>
+// =========================================
+// ADD MESSAGE TO CHAT
+// =========================================
 
-                <div class="brand-info">
+function addMessage(message, sender) {
 
-                    <h1>
-                        TravelMate AI
-                    </h1>
+    const messageWrapper =
+        document.createElement("div");
 
-                    <p>
-                        Your AI Travel Assistant
-                    </p>
+    messageWrapper.classList.add(
+        "message"
+    );
 
-                </div>
+    if (sender === "user") {
 
-            </div>
+        messageWrapper.classList.add(
+            "user-message"
+        );
 
-            <div class="online-status">
+    } else {
 
-                <span class="status-dot"></span>
+        messageWrapper.classList.add(
+            "bot-message"
+        );
+    }
 
-                Online
 
-            </div>
+    // Avatar
+    const avatar =
+        document.createElement("div");
 
-        </header>
+    avatar.classList.add("avatar");
 
+    avatar.textContent =
+        sender === "user" ? "👤" : "✈️";
 
-        <!-- =====================================
-             CHAT WINDOW
-        ====================================== -->
 
-        <main
-            id="chat-window"
-            class="chat-window"
-        >
+    // Content
+    const content =
+        document.createElement("div");
 
-            <!-- Welcome Message -->
+    content.classList.add(
+        "message-content"
+    );
 
-            <div class="message bot-message">
 
-                <div class="avatar">
-                    ✈️
-                </div>
+    // Name
+    const name =
+        document.createElement("div");
 
-                <div class="message-content">
+    name.classList.add(
+        "message-name"
+    );
 
-                    <div class="message-name">
-                        TravelMate AI
-                    </div>
+    name.textContent =
+        sender === "user"
+            ? "You"
+            : "TravelMate AI";
 
-                    <div class="message-bubble">
 
-                        <p>
-                            Hi! 👋 I'm TravelMate AI.
-                        </p>
+    // Message bubble
+    const bubble =
+        document.createElement("div");
 
-                        <p>
-                            I can help you with travel
-                            and tourism-related questions.
-                        </p>
+    bubble.classList.add(
+        "message-bubble"
+    );
 
-                        <p>
-                            You can ask me about:
-                        </p>
 
-                        <ul>
+    // Convert text safely into formatted HTML
+    bubble.innerHTML =
+        formatMessage(message);
 
-                            <li>
-                                🗺️ Trip planning
-                            </li>
 
-                            <li>
-                                📍 Tourist places
-                            </li>
+    content.appendChild(name);
 
-                            <li>
-                                🏨 Hotels
-                            </li>
+    content.appendChild(bubble);
 
-                            <li>
-                                🚆 Transportation
-                            </li>
 
-                            <li>
-                                💰 Travel budget
-                            </li>
+    messageWrapper.appendChild(avatar);
 
-                            <li>
-                                📅 Itineraries
-                            </li>
+    messageWrapper.appendChild(content);
 
-                            <li>
-                                🎒 Packing & travel tips
-                            </li>
 
-                        </ul>
+    chatWindow.appendChild(
+        messageWrapper
+    );
 
-                        <p>
-                            Where would you like to travel?
-                        </p>
 
-                    </div>
+    scrollToBottom();
+}
 
-                </div>
 
-            </div>
+// =========================================
+// FORMAT BOT MESSAGE
+// =========================================
 
-        </main>
+function formatMessage(text) {
 
+    if (!text) {
+        return "";
+    }
 
-        <!-- =====================================
-             TYPING INDICATOR
-        ====================================== -->
 
-        <div
-            id="typing-indicator"
-            class="typing-indicator hidden"
-        >
+    // Escape HTML first
+    let formatted =
+        escapeHtml(text);
 
-            <div class="avatar">
-                ✈️
-            </div>
 
-            <div class="typing-bubble">
+    // Bold markdown
+    formatted =
+        formatted.replace(
+            /\*\*(.*?)\*\*/g,
+            "<strong>$1</strong>"
+        );
 
-                <span></span>
-                <span></span>
-                <span></span>
 
-            </div>
+    // Convert line breaks
+    formatted =
+        formatted.replace(
+            /\n/g,
+            "<br>"
+        );
 
-        </div>
 
+    return formatted;
+}
 
-        <!-- =====================================
-             ERROR MESSAGE
-        ====================================== -->
 
-        <div
-            id="error-banner"
-            class="error-banner hidden"
-        ></div>
+// =========================================
+// ESCAPE HTML
+// =========================================
 
+function escapeHtml(text) {
 
-        <!-- =====================================
-             QUICK QUESTIONS
-        ====================================== -->
+    const div =
+        document.createElement("div");
 
-        <div class="quick-prompts">
+    div.textContent = text;
 
-            <button
-                type="button"
-                class="quick-prompt"
-                data-prompt="Plan a 3 day trip to Ooty"
-            >
-                🗺️ Plan a trip
-            </button>
+    return div.innerHTML;
+}
 
-            <button
-                type="button"
-                class="quick-prompt"
-                data-prompt="What are the best tourist places in Kerala?"
-            >
-                📍 Tourist places
-            </button>
 
-            <button
-                type="button"
-                class="quick-prompt"
-                data-prompt="What should I pack for a hill station trip?"
-            >
-                🎒 Packing tips
-            </button>
+// =========================================
+// SCROLL CHAT TO BOTTOM
+// =========================================
 
-            <button
-                type="button"
-                class="quick-prompt"
-                data-prompt="How can I plan a budget trip to Goa?"
-            >
-                💰 Budget trip
-            </button>
+function scrollToBottom() {
 
-        </div>
+    chatWindow.scrollTop =
+        chatWindow.scrollHeight;
+}
 
 
-        <!-- =====================================
-             CHAT INPUT
-        ====================================== -->
+// =========================================
+// SHOW TYPING INDICATOR
+// =========================================
 
-        <form
-            id="chat-form"
-            class="chat-input-area"
-        >
+function showTyping() {
 
-            <input
-                type="text"
-                id="message-input"
-                name="message"
-                placeholder="Ask TravelMate about your trip..."
-                autocomplete="off"
-                required
-            >
+    typingIndicator.classList.remove(
+        "hidden"
+    );
 
-            <button
-                type="submit"
-                id="send-button"
-                class="send-button"
-                aria-label="Send message"
-            >
-                ➤
-            </button>
+    scrollToBottom();
+}
 
-        </form>
 
+// =========================================
+// HIDE TYPING INDICATOR
+// =========================================
 
-        <!-- =====================================
-             FOOTER
-        ====================================== -->
+function hideTyping() {
 
-        <div class="chat-footer">
+    typingIndicator.classList.add(
+        "hidden"
+    );
+}
 
-            <span>
-                TravelMate AI
-            </span>
 
-            <span>
-                •
-            </span>
+// =========================================
+// SHOW ERROR
+// =========================================
 
-            <span>
-                Travel & Tourism Assistant
-            </span>
+function showError(message) {
 
-        </div>
+    errorBanner.textContent =
+        message;
 
-    </div>
+    errorBanner.classList.remove(
+        "hidden"
+    );
+}
 
 
-    <!-- =========================================
-         JAVASCRIPT
-    ========================================== -->
+// =========================================
+// HIDE ERROR
+// =========================================
 
-    <script
-        src="{{ url_for('static', filename='scripts.js') }}"
-    ></script>
+function hideError() {
 
-</body>
+    errorBanner.classList.add(
+        "hidden"
+    );
 
-</html>
+    errorBanner.textContent = "";
+}
+
+
+// =========================================
+// SEND MESSAGE TO FLASK
+// =========================================
+
+async function sendMessage(message) {
+
+    message =
+        message.trim();
+
+
+    if (!message) {
+        return;
+    }
+
+
+    // Hide previous error
+    hideError();
+
+
+    // Show user's message
+    addMessage(
+        message,
+        "user"
+    );
+
+
+    // Clear input
+    messageInput.value = "";
+
+
+    // Disable input
+    messageInput.disabled = true;
+
+    sendButton.disabled = true;
+
+
+    // Show typing animation
+    showTyping();
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/chat",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        message: message
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        hideTyping();
+
+
+        // Server error
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Something went wrong."
+            );
+        }
+
+
+        // Check bot response
+        if (!data.response) {
+
+            throw new Error(
+                "TravelMate did not return a response."
+            );
+        }
+
+
+        // Show TravelMate response
+        addMessage(
+            data.response,
+            "bot"
+        );
+
+
+    } catch (error) {
+
+        hideTyping();
+
+        console.error(
+            "TravelMate Error:",
+            error
+        );
+
+
+        showError(
+            error.message ||
+            "Unable to connect to TravelMate."
+        );
+
+
+    } finally {
+
+        // Enable input again
+        messageInput.disabled = false;
+
+        sendButton.disabled = false;
+
+
+        // Put cursor back
+        messageInput.focus();
+    }
+}
+
+
+// =========================================
+// FORM SUBMIT
+// =========================================
+
+chatForm.addEventListener(
+    "submit",
+    function (event) {
+
+        event.preventDefault();
+
+
+        const message =
+            messageInput.value.trim();
+
+
+        if (!message) {
+            return;
+        }
+
+
+        sendMessage(message);
+    }
+);
+
+
+// =========================================
+// QUICK PROMPTS
+// =========================================
+
+quickPrompts.forEach(
+    function (button) {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                const prompt =
+                    button.dataset.prompt;
+
+
+                if (!prompt) {
+                    return;
+                }
+
+
+                messageInput.value =
+                    prompt;
+
+
+                messageInput.focus();
+            }
+        );
+    }
+);
+
+
+// =========================================
+// ENTER KEY
+// =========================================
+
+messageInput.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+
+            event.preventDefault();
+
+            chatForm.requestSubmit();
+        }
+    }
+);
+
+
+// =========================================
+// INITIAL FOCUS
+// =========================================
+
+window.addEventListener(
+    "load",
+    function () {
+
+        messageInput.focus();
+
+        scrollToBottom();
+    }
+);
