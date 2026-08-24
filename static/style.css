@@ -1,286 +1,559 @@
-<!DOCTYPE html>
-<html lang="en">
+/* =========================================
+   GLOBAL
+========================================= */
 
-<head>
-    <meta charset="UTF-8">
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    min-height: 100vh;
 
-    <title>TravelMate AI</title>
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
-</head>
+    padding: 20px;
+    color: #1f2937;
+}
 
-<body>
 
-    <!-- =========================================
-         MAIN CHAT CONTAINER
-    ========================================== -->
+/* =========================================
+   CHAT CONTAINER
+========================================= */
 
-    <div class="chat-container">
+.chat-container {
+    width: 100%;
+    max-width: 850px;
+    height: 90vh;
+    max-height: 800px;
 
-        <!-- =====================================
-             HEADER
-        ====================================== -->
+    background: #ffffff;
 
-        <header class="chat-header">
+    border-radius: 18px;
 
-            <div class="brand">
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.10);
 
-                <div class="brand-icon">
-                    ✈️
-                </div>
+    display: flex;
+    flex-direction: column;
 
-                <div class="brand-info">
+    overflow: hidden;
+}
 
-                    <h1>
-                        TravelMate AI
-                    </h1>
 
-                    <p>
-                        Your AI Travel Assistant
-                    </p>
+/* =========================================
+   HEADER
+========================================= */
 
-                </div>
+.chat-header {
+    min-height: 80px;
 
-            </div>
+    padding: 16px 22px;
 
-            <div class="online-status">
+    background: #ffffff;
 
-                <span class="status-dot"></span>
+    border-bottom: 1px solid #e5e7eb;
 
-                Online
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
-            </div>
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-        </header>
+.brand-icon {
+    width: 48px;
+    height: 48px;
 
+    border-radius: 14px;
 
-        <!-- =====================================
-             CHAT WINDOW
-        ====================================== -->
+    background: #2563eb;
 
-        <main
-            id="chat-window"
-            class="chat-window"
-        >
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-            <!-- Welcome Message -->
+    font-size: 24px;
+}
 
-            <div class="message bot-message">
+.brand-info h1 {
+    font-size: 20px;
+    font-weight: 700;
+}
 
-                <div class="avatar">
-                    ✈️
-                </div>
+.brand-info p {
+    margin-top: 3px;
 
-                <div class="message-content">
+    font-size: 13px;
 
-                    <div class="message-name">
-                        TravelMate AI
-                    </div>
+    color: #6b7280;
+}
 
-                    <div class="message-bubble">
+.online-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
 
-                        <p>
-                            Hi! 👋 I'm TravelMate AI.
-                        </p>
+    font-size: 13px;
+    color: #16a34a;
+}
 
-                        <p>
-                            I can help you with travel
-                            and tourism-related questions.
-                        </p>
+.status-dot {
+    width: 8px;
+    height: 8px;
 
-                        <p>
-                            You can ask me about:
-                        </p>
+    border-radius: 50%;
 
-                        <ul>
+    background: #22c55e;
+}
 
-                            <li>
-                                🗺️ Trip planning
-                            </li>
 
-                            <li>
-                                📍 Tourist places
-                            </li>
+/* =========================================
+   CHAT WINDOW
+========================================= */
 
-                            <li>
-                                🏨 Hotels
-                            </li>
+.chat-window {
+    flex: 1;
 
-                            <li>
-                                🚆 Transportation
-                            </li>
+    overflow-y: auto;
 
-                            <li>
-                                💰 Travel budget
-                            </li>
+    padding: 25px;
 
-                            <li>
-                                📅 Itineraries
-                            </li>
+    background: #f8fafc;
 
-                            <li>
-                                🎒 Packing & travel tips
-                            </li>
+    scroll-behavior: smooth;
+}
 
-                        </ul>
 
-                        <p>
-                            Where would you like to travel?
-                        </p>
+/* =========================================
+   MESSAGE
+========================================= */
 
-                    </div>
+.message {
+    display: flex;
+    gap: 10px;
 
-                </div>
+    margin-bottom: 22px;
 
-            </div>
+    max-width: 85%;
+}
 
-        </main>
+.bot-message {
+    align-self: flex-start;
+}
 
+.user-message {
+    margin-left: auto;
 
-        <!-- =====================================
-             TYPING INDICATOR
-        ====================================== -->
+    flex-direction: row-reverse;
+}
 
-        <div
-            id="typing-indicator"
-            class="typing-indicator hidden"
-        >
 
-            <div class="avatar">
-                ✈️
-            </div>
+/* =========================================
+   AVATAR
+========================================= */
 
-            <div class="typing-bubble">
+.avatar {
+    width: 38px;
+    height: 38px;
 
-                <span></span>
-                <span></span>
-                <span></span>
+    min-width: 38px;
 
-            </div>
+    border-radius: 50%;
 
-        </div>
+    background: #dbeafe;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-        <!-- =====================================
-             ERROR MESSAGE
-        ====================================== -->
+    font-size: 19px;
+}
 
-        <div
-            id="error-banner"
-            class="error-banner hidden"
-        ></div>
 
+/* =========================================
+   MESSAGE CONTENT
+========================================= */
 
-        <!-- =====================================
-             QUICK QUESTIONS
-        ====================================== -->
+.message-content {
+    display: flex;
+    flex-direction: column;
 
-        <div class="quick-prompts">
+    gap: 5px;
+}
 
-            <button
-                type="button"
-                class="quick-prompt"
-                data-prompt="Plan a 3 day trip to Ooty"
-            >
-                🗺️ Plan a trip
-            </button>
+.message-name {
+    font-size: 12px;
+    font-weight: 600;
 
-            <button
-                type="button"
-                class="quick-prompt"
-                data-prompt="What are the best tourist places in Kerala?"
-            >
-                📍 Tourist places
-            </button>
+    color: #64748b;
+}
 
-            <button
-                type="button"
-                class="quick-prompt"
-                data-prompt="What should I pack for a hill station trip?"
-            >
-                🎒 Packing tips
-            </button>
+.user-message .message-name {
+    text-align: right;
+}
 
-            <button
-                type="button"
-                class="quick-prompt"
-                data-prompt="How can I plan a budget trip to Goa?"
-            >
-                💰 Budget trip
-            </button>
 
-        </div>
+/* =========================================
+   MESSAGE BUBBLE
+========================================= */
 
+.message-bubble {
+    padding: 13px 16px;
 
-        <!-- =====================================
-             CHAT INPUT
-        ====================================== -->
+    border-radius: 14px;
 
-        <form
-            id="chat-form"
-            class="chat-input-area"
-        >
+    background: #ffffff;
 
-            <input
-                type="text"
-                id="message-input"
-                name="message"
-                placeholder="Ask TravelMate about your trip..."
-                autocomplete="off"
-                required
-            >
+    border: 1px solid #e5e7eb;
 
-            <button
-                type="submit"
-                id="send-button"
-                class="send-button"
-                aria-label="Send message"
-            >
-                ➤
-            </button>
+    line-height: 1.6;
 
-        </form>
+    font-size: 14px;
 
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.04);
+}
 
-        <!-- =====================================
-             FOOTER
-        ====================================== -->
+.user-message .message-bubble {
+    background: #2563eb;
 
-        <div class="chat-footer">
+    color: #ffffff;
 
-            <span>
-                TravelMate AI
-            </span>
+    border: none;
+}
 
-            <span>
-                •
-            </span>
+.message-bubble p {
+    margin-bottom: 8px;
+}
 
-            <span>
-                Travel & Tourism Assistant
-            </span>
+.message-bubble p:last-child {
+    margin-bottom: 0;
+}
 
-        </div>
+.message-bubble ul {
+    margin: 8px 0 8px 20px;
+}
 
-    </div>
+.message-bubble li {
+    margin-bottom: 4px;
+}
 
 
-    <!-- =========================================
-         JAVASCRIPT
-    ========================================== -->
+/* =========================================
+   TYPING INDICATOR
+========================================= */
 
-    <script
-        src="{{ url_for('static', filename='scripts.js') }}"
-    ></script>
+.typing-indicator {
+    display: flex;
 
-</body>
+    align-items: center;
 
-</html>
+    gap: 10px;
+
+    padding: 0 25px 12px;
+
+    background: #f8fafc;
+}
+
+.typing-bubble {
+    display: flex;
+    gap: 4px;
+
+    padding: 12px 15px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 14px;
+}
+
+.typing-bubble span {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #94a3b8;
+
+    animation: typing 1.2s infinite;
+}
+
+.typing-bubble span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-bubble span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.5;
+    }
+
+    30% {
+        transform: translateY(-4px);
+        opacity: 1;
+    }
+}
+
+
+/* =========================================
+   HIDDEN
+========================================= */
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+.error-banner {
+    margin: 0 20px 10px;
+
+    padding: 10px 14px;
+
+    border-radius: 8px;
+
+    background: #fef2f2;
+
+    color: #dc2626;
+
+    border: 1px solid #fecaca;
+
+    font-size: 13px;
+}
+
+
+/* =========================================
+   QUICK PROMPTS
+========================================= */
+
+.quick-prompts {
+    display: flex;
+
+    gap: 8px;
+
+    padding: 12px 20px;
+
+    overflow-x: auto;
+
+    background: #ffffff;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+.quick-prompt {
+    flex-shrink: 0;
+
+    border: 1px solid #dbeafe;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    border-radius: 20px;
+
+    padding: 8px 13px;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.quick-prompt:hover {
+    background: #2563eb;
+
+    color: #ffffff;
+}
+
+
+/* =========================================
+   CHAT INPUT
+========================================= */
+
+.chat-input-area {
+    display: flex;
+
+    gap: 10px;
+
+    padding: 15px 20px;
+
+    background: #ffffff;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+#message-input {
+    flex: 1;
+
+    height: 48px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 12px;
+
+    padding: 0 15px;
+
+    outline: none;
+
+    font-size: 14px;
+
+    transition: 0.2s ease;
+}
+
+#message-input:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+
+/* =========================================
+   SEND BUTTON
+========================================= */
+
+.send-button {
+    width: 48px;
+    height: 48px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.send-button:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+}
+
+.send-button:disabled {
+    background: #93c5fd;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.chat-footer {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 8px;
+
+    background: #ffffff;
+
+    color: #94a3b8;
+
+    font-size: 11px;
+
+    border-top: 1px solid #f1f5f9;
+}
+
+
+/* =========================================
+   MOBILE RESPONSIVE
+========================================= */
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 0;
+    }
+
+    .chat-container {
+        height: 100vh;
+        max-height: none;
+
+        border-radius: 0;
+    }
+
+    .chat-header {
+        padding: 14px 16px;
+    }
+
+    .brand-icon {
+        width: 42px;
+        height: 42px;
+
+        font-size: 21px;
+    }
+
+    .brand-info h1 {
+        font-size: 17px;
+    }
+
+    .online-status {
+        font-size: 11px;
+    }
+
+    .chat-window {
+        padding: 18px 15px;
+    }
+
+    .message {
+        max-width: 92%;
+    }
+
+    .quick-prompts {
+        padding: 10px 12px;
+    }
+
+    .chat-input-area {
+        padding: 12px;
+    }
+
+    #message-input {
+        height: 45px;
+    }
+
+    .send-button {
+        width: 45px;
+        height: 45px;
+    }
+
+    .chat-footer {
+        display: none;
+    }
+}
